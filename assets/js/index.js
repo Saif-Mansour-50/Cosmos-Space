@@ -240,9 +240,7 @@ async function Launches() {
     let res = await fetch(
       "https://lldev.thespacedevs.com/2.3.0/launches/upcoming/?format=json"
     );
-    // let res = await fetch(
-    //   "https://lldev.thespacedevs.com/2.3.0/launches/upcoming/?limit=10"
-    // );
+
     let finalres = await res.json();
 
     // نرسل المصفوفة results للدالة المسؤولة عن العرض
@@ -333,6 +331,7 @@ function displayLunch(zzz) {
   // عرض النتيجة في الـ Grid
   document.getElementById("launches-grid").innerHTML = cartona;
 }
+
 function displayImg(mainImg) {
   let cartona = "";
   for (let i = 0; i < mainImg.length; i++) {
@@ -367,25 +366,132 @@ function displayImg(mainImg) {
 // تشغيل الكود
 Launches();
 
+// Launches Main img
+
 const imageUrl = `https://thespacedevs-dev.nyc3.digitaloceanspaces.com/media/images/falcon2520925_image_20221009234147.png`;
 
 function setHeroImage(url) {
-  const container = document.getElementById("main-hero-image");
+  // تم تغيير الـ ID هنا ليتطابق مع الـ HTML الخاص بك
+  const container = document.getElementById("hero-image-container");
 
-  // إنشاء وسم الصورة الجديد
-  const imgHtml = `
+  if (container) {
+    container.innerHTML = `
         <img 
             src="${url}" 
-            class="absolute inset-0 w-full h-full object-cover" 
+            class="absolute inset-0 w-full h-full object-cover transition-all duration-1000" 
             alt="Rocket Launch 2026"
+            onload="this.style.opacity='1'"
+            style="opacity: 0"
         />
-        <!-- الحفاظ على الطبقة الشفافة فوق الصورة -->
+        <!-- الطبقة الشفافة (Gradient) -->
         <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent"></div>
     `;
-
-  // تحديث المحتوى
-  container.innerHTML = imgHtml;
+  } else {
+    console.error("لم يتم العثور على عنصر باسم hero-image-container");
+  }
 }
 
 // تنفيذ الإضافة
 setHeroImage(imageUrl);
+
+// 3 Explore Our Solar System
+
+async function Planets() {
+  try {
+    let res = await fetch(
+      "https://solar-system-opendata-proxy.vercel.app/api/planets"
+    );
+
+    let finalres = await res.json();
+
+    console.log(finalres.bodies);
+
+    // نرسل المصفوفة results للدالة المسؤولة عن العرض
+    displayPlanets(finalres.bodies);
+  } catch (error) {
+    console.error("خطأ في جلب البيانات:", error);
+  }
+}
+
+function displayPlanets(Planets) {
+  let cartona = ``;
+
+  // مصفوفة ألوان اختيارية لتمييز الكواكب
+  const colors = {
+    Mercury: "#eab308",
+    Venus: "#f97316",
+    Earth: "#3b82f6",
+    Mars: "#ef4444",
+    Jupiter: "#fb923c",
+    Saturn: "#facc15",
+    Uranus: "#06b6d4",
+    Neptune: "#2563eb",
+  };
+
+  for (let i = 0; i < Planets.length; i++) {
+    let planet = Planets[i];
+    let planetColor = colors[planet.englishName] || "#94a3b8";
+
+    // حساب المسافة AU (المسافة مقسومة على المسافة بين الأرض والشمس)
+    let distanceAU = (planet.semimajorAxis / 149597871).toFixed(2);
+
+    cartona += `
+      <tr onclick="updatePlanetDetails('${
+        planet.id
+      }')" class="hover:bg-slate-800/30 transition-colors cursor-pointer border-b border-slate-700/50">
+        <td class="px-4 md:px-6 py-3 md:py-4 sticky left-0 bg-slate-800 z-10">
+          <div class="flex items-center space-x-2 md:space-x-3">
+            <div class="w-6 h-6 md:w-8 md:h-8 rounded-full flex-shrink-0"
+                 style="background-color: ${planetColor}"></div>
+            <span class="font-semibold text-sm md:text-base whitespace-nowrap">
+              ${planet.englishName}
+            </span>
+          </div>
+        </td>
+        <td class="px-4 md:px-6 py-3 md:py-4 text-slate-300 text-sm md:text-base whitespace-nowrap">
+          ${distanceAU}
+        </td>
+        <td class="px-4 md:px-6 py-3 md:py-4 text-slate-300 text-sm md:text-base whitespace-nowrap">
+          ${planet.meanRadius.toLocaleString()}
+        </td>
+        <td class="px-4 md:px-6 py-3 md:py-4 text-slate-300 text-sm md:text-base whitespace-nowrap">
+          ${planet.gravity}
+        </td>
+        <td class="px-4 md:px-6 py-3 md:py-4 text-slate-300 text-sm md:text-base whitespace-nowrap">
+          ${Math.floor(planet.sideralOrbit)} days
+        </td>
+        <td class="px-4 md:px-6 py-3 md:py-4 text-slate-300 text-sm md:text-base whitespace-nowrap">
+          ${planet.moons ? planet.moons.length : 0}
+        </td>
+        <td class="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap">
+          <span class="px-2 py-1 rounded text-xs bg-orange-500/50 text-orange-200">
+            ${planet.bodyType}
+          </span>
+        </td>
+      </tr>
+    `;
+  }
+  document.getElementById("planet-comparison-tbody").innerHTML = cartona;
+}
+
+// الدالة المسؤولة عن تحديث معلومات المكتشف والتاريخ عند الضغط على الصف
+function updatePlanetDetails(planetId) {
+  // البحث عن الكوكب في المصفوفة المخزنة (تأكد أن Planets متاحة هنا)
+  const planet = window.allPlanetsData.find((p) => p.id === planetId);
+
+  if (planet) {
+    // تحديث المكتشف وتاريخ الاكتشاف
+    document.getElementById("planet-detail-name").innerText =
+      planet.englishName;
+    document.getElementById("discovered-by").innerText =
+      planet.discoveredBy || "Ancient Astronomers";
+    document.getElementById("discovery-date").innerText =
+      planet.discoveryDate || "Known since antiquity";
+
+    // تحديث الصورة والوصف إذا كانا متوفرين في الـ API الخاص بك
+    if (planet.image)
+      document.getElementById("planet-detail-image").src = planet.image;
+  }
+}
+
+Planets();
