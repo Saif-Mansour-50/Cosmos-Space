@@ -77,18 +77,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 document.addEventListener("DOMContentLoaded", () => {
   let apodDateInput = document.getElementById("apod-date-input");
-  let apodDateDetail = document.getElementById("apod-date-detail"); // الـ ID الجديد
+  let apodDateDetail = document.getElementById("apod-date-detail");
   let loadDateBtn = document.getElementById("load-date-btn");
   let todayApodBtn = document.getElementById("today-apod-btn");
   let imageContainer = document.getElementById("apod-image-container");
   let loadingElement = document.getElementById("apod-loading");
 
-  // 2. تجهيز تاريخ اليوم (January 3, 2026)
   let today = new Date();
   let options = { year: "numeric", month: "long", day: "numeric" };
   let prettyDate = today.toLocaleDateString("en-US", options);
 
-  // 3. وضع التاريخ داخل الـ id الجديد بمجرد تشغيل الكود
   if (apodDateDetail) {
     apodDateDetail.textContent = prettyDate;
   }
@@ -396,3 +394,91 @@ function updatePlanetDetails(planetId) {
 }
 
 Planets();
+
+// test Explore Our Solar System
+
+document.addEventListener("DOMContentLoaded", function () {
+  const planetsData = {
+    mercury: {
+      name: "Mercury",
+      image: "./assets/images/mercury.png",
+      description:
+        "Mercury is the smallest planet in the Solar System and the closest to the Sun. Its orbit around the Sun takes 87.97 Earth days, the shortest of all the Sun's planets.",
+    },
+    venus: {
+      name: "Venus",
+      image: "./assets/images/venus.png",
+      description:
+        "Venus is the second planet from the Sun. It is the hottest planet in our solar system with a surface temperature hot enough to melt lead.",
+    },
+    earth: {
+      name: "Earth",
+      image: "./assets/images/earth.png",
+      description:
+        "Earth is the third planet from the Sun and the only astronomical object known to harbor life. About 71% of Earth's surface is covered with water.",
+    },
+    mars: {
+      name: "Mars",
+      image: "./assets/images/mars.png",
+      description:
+        "Mars is the fourth planet from the Sun. It is often referred to as the 'Red Planet' because of the iron oxide prevalent on its surface.",
+    },
+    jupiter: {
+      name: "Jupiter",
+      image: "./assets/images/jupiter.png",
+      description:
+        "Jupiter is the largest planet in the Solar System. It is a gas giant with a mass more than two and a half times that of all the other planets combined.",
+    },
+    saturn: {
+      name: "Saturn",
+      image: "./assets/images/saturn.png",
+      description:
+        "Saturn is the sixth planet from the Sun and the second-largest in the Solar System. It is famous for its bright and complex ring system.",
+    },
+    uranus: {
+      name: "Uranus",
+      image: "./assets/images/uranus.png",
+      description:
+        "Uranus is the seventh planet from the Sun. It has the third-largest planetary radius and fourth-largest planetary mass in the Solar System.",
+    },
+    neptune: {
+      name: "Neptune",
+      image: "./assets/images/neptune.png",
+      description:
+        "Neptune is the eighth and farthest-known Solar planet from the Sun. It is the densest giant planet and is 17 times the mass of Earth.",
+    },
+  };
+
+  const planetCards = document.querySelectorAll(".planet-card");
+  const detailImage = document.getElementById("planet-detail-image");
+  const detailName = document.getElementById("planet-detail-name");
+  const detailDescription = document.getElementById(
+    "planet-detail-description"
+  );
+
+  for (let i = 0; i < planetCards.length; i++) {
+    planetCards[i].addEventListener("click", function () {
+      const planetId = this.getAttribute("data-planet-id");
+      const planetInfo = planetsData[planetId];
+
+      if (planetInfo) {
+        // تحديث الصورة مع تأثير بسيط
+        detailImage.style.opacity = "0";
+
+        setTimeout(function () {
+          detailImage.src = planetInfo.image;
+          detailImage.alt = planetInfo.name;
+          detailName.textContent = planetInfo.name;
+          detailDescription.textContent = planetInfo.description;
+          detailImage.style.opacity = "1";
+        }, 200);
+
+        // تمييز البطاقة المختارة (اختياري)
+        for (let j = 0; j < planetCards.length; j++) {
+          planetCards[j].classList.remove("ring-2", "ring-blue-500");
+        }
+        this.classList.add("ring-2", "ring-blue-500");
+      }
+    });
+  }
+});
