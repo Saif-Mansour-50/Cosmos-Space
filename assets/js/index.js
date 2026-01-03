@@ -1,168 +1,98 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const now = new Date();
-  const isoDate = now.toISOString().split("T")[0];
-  const prettyDate = now.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-
-  const navLinks = document.querySelectorAll(".nav-link");
-  const sections = document.querySelectorAll(".app-section");
-  const sidebar = document.getElementById("sidebar");
-  const sidebarToggle = document.getElementById("sidebar-toggle");
+document.addEventListener("DOMContentLoaded", function () {
+  let navLinks = document.querySelectorAll(".nav-link");
+  let sections = document.querySelectorAll(".app-section");
+  let sidebar = document.getElementById("sidebar");
+  let sidebarToggle = document.getElementById("sidebar-toggle");
 
   function showSection(sectionId) {
-    sections.forEach((section) => {
-      section.classList.add("hidden");
-      if (section.id === sectionId) section.classList.remove("hidden");
-    });
+    for (let i = 0; i < sections.length; i++) {
+      sections[i].classList.add("hidden");
+      if (sections[i].id === sectionId) {
+        sections[i].classList.remove("hidden");
+      }
+    }
 
-    navLinks.forEach((link) => {
-      if (link.getAttribute("data-section") === sectionId) {
-        link.classList.add("bg-blue-500/10", "text-blue-400");
+    for (let j = 0; j < navLinks.length; j++) {
+      if (navLinks[j].getAttribute("data-section") === sectionId) {
+        navLinks[j].classList.add("bg-blue-500/10", "text-blue-400");
       } else {
-        link.classList.remove("bg-blue-500/10", "text-blue-400");
+        navLinks[j].classList.remove("bg-blue-500/10", "text-blue-400");
       }
-    });
-  }
-
-  navLinks.forEach((link) => {
-    link.addEventListener("click", (e) => {
-      e.preventDefault();
-      const sectionId = link.getAttribute("data-section");
-      showSection(sectionId);
-
-      if (sectionId === "launches") fetchUpcomingLaunches();
-
-      if (window.innerWidth < 1024) sidebar.classList.add("-translate-x-full");
-    });
-  });
-
-  sidebarToggle.addEventListener("click", () => {
-    sidebar.classList.toggle("-translate-x-full");
-  });
-
-  const dateInput = document.getElementById("apod-date-input");
-  if (dateInput) {
-    dateInput.value = isoDate;
-    dateInput.max = isoDate;
-    dateInput.nextElementSibling.textContent = now.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  }
-  document.getElementById(
-    "apod-date"
-  ).textContent = `Astronomy Picture of the Day - ${prettyDate}`;
-
-  async function fetchNASAData(date) {
-    const loading = document.getElementById("apod-loading");
-    const container = document.getElementById("apod-image-container");
-    loading.classList.remove("hidden");
-
-    try {
-      const data = await response.json();
-
-      if (data.media_type === "image") {
-        container.style.backgroundImage = `url('${data.url}')`;
-        container.style.backgroundSize = "cover";
-        container.style.backgroundPosition = "center";
-      }
-      document.getElementById("apod-title").textContent = data.title;
-      document.getElementById("apod-explanation").textContent =
-        data.explanation;
-      document.getElementById("apod-date-info").textContent = data.date;
-    } catch (error) {
-    } finally {
-      loading.classList.add("hidden");
     }
   }
 
-  async function fetchUpcomingLaunches() {
-    const grid = document.getElementById("launches-grid");
-    const featured = document.getElementById("featured-launch");
+  for (let k = 0; k < navLinks.length; k++) {
+    navLinks[k].addEventListener("click", function (e) {
+      e.preventDefault();
+      let sectionId = this.getAttribute("data-section");
 
-    try {
-      const data = await response.json();
+      showSection(sectionId);
 
-      document.getElementById(
-        "launches-count"
-      ).textContent = `${data.count} Launches`;
-      document.getElementById("launches-count-mobile").textContent = data.count;
-
-      grid.innerHTML = data.results
-        .map(
-          (launch) => `
-                <div class="bg-slate-800/50 border border-slate-700 rounded-2xl overflow-hidden p-5 hover:border-blue-500/30 transition-all">
-                    <span class="text-xs font-bold text-blue-400 uppercase">${
-                      launch.rocket.configuration.name
-                    }</span>
-                    <h4 class="font-bold text-white mt-2">${launch.name}</h4>
-                    <p class="text-xs text-slate-400 mt-2"><i class="fas fa-calendar mr-2"></i>${new Date(
-                      launch.net
-                    ).toLocaleDateString()}</p>
-                    <p class="text-xs text-slate-500 mt-1"><i class="fas fa-map-marker-alt mr-2"></i>${
-                      launch.pad.location.name
-                    }</p>
-                </div>
-            `
-        )
-        .join("");
-    } catch (error) {}
+      if (window.innerWidth < 1024 && sidebar) {
+        sidebar.classList.add("-translate-x-full");
+      }
+    });
   }
 
-  fetchNASAData(isoDate);
+  if (sidebarToggle) {
+    sidebarToggle.addEventListener("click", function () {
+      sidebar.classList.toggle("-translate-x-full");
+    });
+  }
 });
 
-// #############################################
-//1
+//1 Today in Space
+
 document.addEventListener("DOMContentLoaded", () => {
-  const today = new Date();
+  let today = new Date();
 
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, "0");
-  const dd = String(today.getDate()).padStart(2, "0");
-  const isoDate = `${yyyy}-${mm}-${dd}`;
+  let yyyy = today.getFullYear();
+  let mm = String(today.getMonth() + 1).padStart(2, "0");
+  let dd = String(today.getDate()).padStart(2, "0");
+  let realDate = `${yyyy}-${mm}-${dd}`;
 
-  const options = { year: "numeric", month: "short", day: "numeric" };
-  const prettyDate = today.toLocaleDateString("en-US", options);
+  let options = { month: "short", day: "numeric", year: "numeric" };
+  let prettyDate = today.toLocaleDateString("en-US", options);
 
-  const dateInput = document.getElementById("apod-date-input");
+  let dateInput = document.getElementById("apod-date-input");
   if (dateInput) {
-    dateInput.value = isoDate;
-    dateInput.max = isoDate; // منع اختيار تاريخ مستقبلي
+    dateInput.value = realDate;
   }
 
-  const dateSpan = document.querySelector(".date-input-wrapper span");
+  let dateSpan = document.querySelector(".date-input-wrapper span");
   if (dateSpan) {
     dateSpan.textContent = prettyDate;
   }
 
-  const apodDateText = document.getElementById("apod-date");
+  let apodDateText = document.getElementById("apod-date");
   if (apodDateText) {
     apodDateText.textContent = `Astronomy Picture of the Day - ${prettyDate}`;
   }
 
-  const apodDateInfo = document.getElementById("apod-date-info");
+  let apodDateInfo = document.getElementById("apod-date-info");
   if (apodDateInfo) {
-    apodDateInfo.textContent = isoDate;
+    apodDateInfo.textContent = realDate;
   }
 });
 
-const API_KEY = "DEMO_KEY";
-
 document.addEventListener("DOMContentLoaded", () => {
-  const apodDateInput = document.getElementById("apod-date-input");
-  const loadDateBtn = document.getElementById("load-date-btn");
-  const todayApodBtn = document.getElementById("today-apod-btn");
-  const imageContainer = document.getElementById("apod-image-container");
-  const loadingElement = document.getElementById("apod-loading");
+  let apodDateInput = document.getElementById("apod-date-input");
+  let apodDateDetail = document.getElementById("apod-date-detail"); // الـ ID الجديد
+  let loadDateBtn = document.getElementById("load-date-btn");
+  let todayApodBtn = document.getElementById("today-apod-btn");
+  let imageContainer = document.getElementById("apod-image-container");
+  let loadingElement = document.getElementById("apod-loading");
 
-  // 1. وظيفة جلب البيانات من ناسا
+  // 2. تجهيز تاريخ اليوم (January 3, 2026)
+  let today = new Date();
+  let options = { year: "numeric", month: "long", day: "numeric" };
+  let prettyDate = today.toLocaleDateString("en-US", options);
+
+  // 3. وضع التاريخ داخل الـ id الجديد بمجرد تشغيل الكود
+  if (apodDateDetail) {
+    apodDateDetail.textContent = prettyDate;
+  }
   async function fetchSpaceData(date = "") {
-    // إظهار مؤشر التحميل وتفريغ المحتوى السابق
     loadingElement.classList.remove("hidden");
     imageContainer.style.backgroundImage = "none";
 
@@ -170,65 +100,55 @@ document.addEventListener("DOMContentLoaded", () => {
     if (date) url += `&date=${date}`;
 
     try {
-      const response = await fetch(url);
-      const data = await response.json();
+      let response = await fetch(url);
+      let data = await response.json();
 
-      if (response.ok) {
+      if (response.status === 200) {
         displayData(data);
       } else {
-        alert("خطأ في جلب البيانات: " + data.msg);
+        alert("erorr");
       }
     } catch (error) {
-      console.error("حدث خطأ:", error);
+      console.error(" Erorr :", error);
     } finally {
       loadingElement.classList.add("hidden");
     }
   }
 
-  // 2. وظيفة عرض البيانات في الصفحة
   function displayData(data) {
-    // تحديث التاريخ المكتوب
     document.getElementById(
       "apod-date"
     ).innerText = `Astronomy Picture of the Day - ${data.date}`;
 
-    // عرض الصورة أو الفيديو
     if (data.media_type === "image") {
-      imageContainer.innerHTML = ""; // مسح أي محتوى سابق
+      imageContainer.innerHTML = "";
       imageContainer.style.backgroundImage = `url('${data.url}')`;
       imageContainer.style.backgroundSize = "cover";
       imageContainer.style.backgroundPosition = "center";
     } else {
-      // في حال كان المحتوى فيديو (مثل فيديوهات اليوتيوب)
       imageContainer.style.backgroundImage = "none";
       imageContainer.innerHTML = `<iframe class="w-full h-full rounded-2xl" src="${data.url}" frameborder="0" allowfullscreen></iframe>`;
     }
 
-    // تحديث العنوان والوصف (تأكد من إضافة هذه الـ IDs في الـ HTML لديك)
-    const titleElem = document.getElementById("apod-title");
-    const descElem = document.getElementById("apod-explanation");
+    let titleElem = document.getElementById("apod-title");
+    let descElem = document.getElementById("apod-explanation");
 
     if (titleElem) titleElem.innerText = data.title;
     if (descElem) descElem.innerText = data.explanation;
   }
 
-  // 3. مستمعات الأحداث (Event Listeners)
-
-  // عند الضغط على زر Load
   loadDateBtn.addEventListener("click", () => {
-    const selectedDate = apodDateInput.value;
+    let selectedDate = apodDateInput.value;
     if (selectedDate) fetchSpaceData(selectedDate);
   });
 
-  // عند الضغط على زر Today
   todayApodBtn.addEventListener("click", () => {
-    const today = new Date().toISOString().split("T")[0];
+    let today = new Date().toISOString().split("T")[0];
     apodDateInput.value = today;
     fetchSpaceData(today);
   });
 
-  // تشغيل الجلب التلقائي عند فتح الصفحة (لصورة اليوم 2026)
-  const todayDate = new Date().toISOString().split("T")[0];
+  let todayDate = new Date().toISOString().split("T")[0];
   apodDateInput.value = todayDate;
   fetchSpaceData(todayDate);
 });
@@ -243,19 +163,17 @@ async function Launches() {
 
     let finalres = await res.json();
 
-    // نرسل المصفوفة results للدالة المسؤولة عن العرض
     displayLunch(finalres.results);
   } catch (error) {
-    console.error("خطأ في جلب البيانات:", error);
+    console.error("Erorr", error);
   }
 }
 
 function displayLunch(zzz) {
   let cartona = "";
   for (let i = 0; i < zzz.length; i++) {
-    // 1. معالجة التاريخ والوقت من حقل net
-    const launchDate = new Date(zzz[i].net);
-    const formattedDate = launchDate.toLocaleDateString("en-US", {
+    let launchDate = new Date(zzz[i].net);
+    let formattedDate = launchDate.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
@@ -266,8 +184,7 @@ function displayLunch(zzz) {
       hour12: false,
     });
 
-    // 2. تحديد لون الحالة بناءً على abbrev
-    let statusBg = "bg-blue-500/90"; // الافتراضي TBD
+    let statusBg = "bg-blue-500/90";
     if (zzz[i].status.abbrev === "Go") statusBg = "bg-green-500/90";
     if (zzz[i].status.abbrev === "TBC") statusBg = "bg-yellow-500/90";
 
@@ -328,14 +245,12 @@ function displayLunch(zzz) {
     </div>
     `;
   }
-  // عرض النتيجة في الـ Grid
   document.getElementById("launches-grid").innerHTML = cartona;
 }
 
 function displayImg(mainImg) {
   let cartona = "";
   for (let i = 0; i < mainImg.length; i++) {
-    // 1. معالجة التاريخ والوقت من حقل net
     const launchDate = new Date(mainImg[i].net);
     const formattedDate = launchDate.toLocaleDateString("en-US", {
       month: "short",
@@ -348,8 +263,7 @@ function displayImg(mainImg) {
       hour12: false,
     });
 
-    // 2. تحديد لون الحالة بناءً على abbrev
-    let statusBg = "bg-blue-500/90"; // الافتراضي TBD
+    let statusBg = "bg-blue-500/90";
     if (mainImg[i].status.abbrev === "Go") statusBg = "bg-green-500/90";
     if (mainImg[i].status.abbrev === "TBC") statusBg = "bg-yellow-500/90";
 
@@ -359,14 +273,11 @@ function displayImg(mainImg) {
   
     `;
   }
-  // عرض النتيجة في الـ Grid
+
   document.getElementById("hero-image-container").innerHTML = cartona;
 }
 
-// تشغيل الكود
 Launches();
-
-// Launches Main img
 
 const imageUrl = `https://thespacedevs-dev.nyc3.digitaloceanspaces.com/media/images/falcon2520925_image_20221009234147.png`;
 
@@ -394,8 +305,6 @@ function setHeroImage(url) {
 // تنفيذ الإضافة
 setHeroImage(imageUrl);
 
-// 3 Explore Our Solar System
-
 async function Planets() {
   try {
     let res = await fetch(
@@ -406,17 +315,15 @@ async function Planets() {
 
     console.log(finalres.bodies);
 
-    // نرسل المصفوفة results للدالة المسؤولة عن العرض
     displayPlanets(finalres.bodies);
   } catch (error) {
-    console.error("خطأ في جلب البيانات:", error);
+    console.error(" Erorr  :", error);
   }
 }
 
 function displayPlanets(Planets) {
   let cartona = ``;
 
-  // مصفوفة ألوان اختيارية لتمييز الكواكب
   const colors = {
     Mercury: "#eab308",
     Venus: "#f97316",
@@ -429,22 +336,20 @@ function displayPlanets(Planets) {
   };
 
   for (let i = 0; i < Planets.length; i++) {
-    let planet = Planets[i];
-    let planetColor = colors[planet.englishName] || "#94a3b8";
+    let planetColor = colors[Planets[i].englishName] || "#94a3b8";
 
-    // حساب المسافة AU (المسافة مقسومة على المسافة بين الأرض والشمس)
-    let distanceAU = (planet.semimajorAxis / 149597871).toFixed(2);
+    let distanceAU = (Planets[i].semimajorAxis / 149597871).toFixed(2);
 
     cartona += `
       <tr onclick="updatePlanetDetails('${
-        planet.id
+        Planets[i].id
       }')" class="hover:bg-slate-800/30 transition-colors cursor-pointer border-b border-slate-700/50">
         <td class="px-4 md:px-6 py-3 md:py-4 sticky left-0 bg-slate-800 z-10">
           <div class="flex items-center space-x-2 md:space-x-3">
             <div class="w-6 h-6 md:w-8 md:h-8 rounded-full flex-shrink-0"
                  style="background-color: ${planetColor}"></div>
             <span class="font-semibold text-sm md:text-base whitespace-nowrap">
-              ${planet.englishName}
+              ${Planets[i].englishName}
             </span>
           </div>
         </td>
@@ -452,20 +357,20 @@ function displayPlanets(Planets) {
           ${distanceAU}
         </td>
         <td class="px-4 md:px-6 py-3 md:py-4 text-slate-300 text-sm md:text-base whitespace-nowrap">
-          ${planet.meanRadius.toLocaleString()}
+          ${Planets[i].meanRadius.toLocaleString()}
         </td>
         <td class="px-4 md:px-6 py-3 md:py-4 text-slate-300 text-sm md:text-base whitespace-nowrap">
-          ${planet.gravity}
+          ${Planets[i].gravity}
         </td>
         <td class="px-4 md:px-6 py-3 md:py-4 text-slate-300 text-sm md:text-base whitespace-nowrap">
-          ${Math.floor(planet.sideralOrbit)} days
+          ${Math.floor(Planets[i].sideralOrbit)} days
         </td>
         <td class="px-4 md:px-6 py-3 md:py-4 text-slate-300 text-sm md:text-base whitespace-nowrap">
-          ${planet.moons ? planet.moons.length : 0}
+          ${Planets[i].moons ? Planets[i].moons.length : 0}
         </td>
         <td class="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap">
           <span class="px-2 py-1 rounded text-xs bg-orange-500/50 text-orange-200">
-            ${planet.bodyType}
+            ${Planets[i].bodyType}
           </span>
         </td>
       </tr>
@@ -474,13 +379,10 @@ function displayPlanets(Planets) {
   document.getElementById("planet-comparison-tbody").innerHTML = cartona;
 }
 
-// الدالة المسؤولة عن تحديث معلومات المكتشف والتاريخ عند الضغط على الصف
 function updatePlanetDetails(planetId) {
-  // البحث عن الكوكب في المصفوفة المخزنة (تأكد أن Planets متاحة هنا)
   const planet = window.allPlanetsData.find((p) => p.id === planetId);
 
   if (planet) {
-    // تحديث المكتشف وتاريخ الاكتشاف
     document.getElementById("planet-detail-name").innerText =
       planet.englishName;
     document.getElementById("discovered-by").innerText =
@@ -488,7 +390,6 @@ function updatePlanetDetails(planetId) {
     document.getElementById("discovery-date").innerText =
       planet.discoveryDate || "Known since antiquity";
 
-    // تحديث الصورة والوصف إذا كانا متوفرين في الـ API الخاص بك
     if (planet.image)
       document.getElementById("planet-detail-image").src = planet.image;
   }
